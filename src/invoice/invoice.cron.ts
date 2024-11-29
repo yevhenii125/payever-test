@@ -10,7 +10,7 @@ export class InvoiceCron {
         private readonly rabbitMQService: RabbitMQService,
     ) { }
 
-    @Cron('0 12 * * *') 
+    @Cron('0 12 * * *')
     async handleCron() {
         const invoices = await this.invoiceService.findAll();
         const today = new Date().toISOString().slice(0, 10);
@@ -33,6 +33,6 @@ export class InvoiceCron {
             itemsSold,
         };
 
-        await this.rabbitMQService.publish('daily_sales_report', report);
+        await this.rabbitMQService.publish('daily_sales_report', 'email_queue', report);
     }
 }
