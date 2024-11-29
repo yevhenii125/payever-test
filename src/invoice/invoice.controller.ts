@@ -20,3 +20,4 @@ export class InvoiceController {
         return this.invoiceService.findAll();
     }
 }
+

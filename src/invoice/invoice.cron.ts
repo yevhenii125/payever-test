@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
 import { InvoiceService } from './invoice.service';
 import { RabbitMQService } from './invoice.rabbitmq';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class InvoiceCron {
@@ -10,7 +10,7 @@ export class InvoiceCron {
         private readonly rabbitMQService: RabbitMQService,
     ) { }
 
-    @Cron('0 12 * * *') // Every day at 12:00 PM
+    @Cron('0 12 * * *') 
     async handleCron() {
         const invoices = await this.invoiceService.findAll();
         const today = new Date().toISOString().slice(0, 10);
@@ -20,13 +20,12 @@ export class InvoiceCron {
         );
 
         const totalSales = dailySales.reduce((sum, invoice) => sum + invoice.amount, 0);
-        const itemsSold = {};
-
-        dailySales.forEach((invoice) => {
+        const itemsSold = dailySales.reduce((acc, invoice) => {
             invoice.items.forEach(({ sku, qt }) => {
-                itemsSold[sku] = (itemsSold[sku] || 0) + qt;
+                acc[sku] = (acc[sku] || 0) + qt;
             });
-        });
+            return acc;
+        }, {});
 
         const report = {
             date: today,

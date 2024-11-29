@@ -2,9 +2,9 @@
 // import { MongooseModule } from '@nestjs/mongoose';
 // import { InvoiceController } from './invoice.controller';
 // import { InvoiceService } from './invoice.service';
+// import { InvoiceSchema } from './invoice.schema';
 // import { InvoiceCron } from './invoice.cron';
 // import { RabbitMQService } from './invoice.rabbitmq';
-// import { InvoiceSchema } from './invoice.schema';
 
 // @Module({
 //     imports: [
@@ -12,19 +12,18 @@
 //     ],
 //     controllers: [InvoiceController],
 //     providers: [InvoiceService, InvoiceCron, RabbitMQService],
+//     exports: [InvoiceService], // Export InvoiceService
 // })
 // export class InvoiceModule { }
 
-
-// invoice-service/src/invoice/invoice.module.ts
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { InvoiceController } from './invoice.controller';
 import { InvoiceService } from './invoice.service';
+import { InvoiceSchema } from './invoice.schema';
 import { InvoiceCron } from './invoice.cron';
 import { RabbitMQService } from './invoice.rabbitmq';
-import { InvoiceSchema } from './invoice.schema';
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 
 @Module({
   imports: [
@@ -36,7 +35,8 @@ import { InvoiceSchema } from './invoice.schema';
           type: 'topic',
         },
       ],
-      uri: 'amqp://localhost:5672', 
+      uri: 'amqp://localhost:5672', // Update with your RabbitMQ URI
+      connectionInitOptions: { wait: false },
     }),
   ],
   controllers: [InvoiceController],
