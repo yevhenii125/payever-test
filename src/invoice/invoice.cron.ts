@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
 import { RabbitMQService } from './invoice.rabbitmq';
-// import { Cron } from '@nestjs/schedule';
-console.log(111111111)
+import { Cron } from '@nestjs/schedule';
+
 @Injectable()
 export class InvoiceCron {
     constructor(
@@ -10,9 +10,8 @@ export class InvoiceCron {
         private readonly rabbitMQService: RabbitMQService,
     ) { }
 
-    // @Cron('0 12 * * *') 
+    @Cron('0 12 * * *') 
     async handleCron() {
-        console.log(2222)
         const invoices = await this.invoiceService.findAll();
         const today = new Date().toISOString().slice(0, 10);
 
@@ -35,11 +34,5 @@ export class InvoiceCron {
         };
 
         await this.rabbitMQService.publish('daily_sales_report', report);
-    }
-
-    async onModuleInit(): Promise<void> {
-        // Call handleCron() immediately on application startup
-        console.log('InvoiceCron initialization: Running handleCron() immediately...');
-        this.handleCron();
     }
 }
